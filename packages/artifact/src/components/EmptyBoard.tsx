@@ -1,4 +1,5 @@
 import { Inbox, FolderOpen, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { fs } from '../api';
 
 interface EmptyBoardProps {
@@ -11,6 +12,7 @@ interface EmptyBoardProps {
  * monochrome icon, single primary CTA.
  */
 export function EmptyBoard({ onSetup, onConnectFolder }: EmptyBoardProps) {
+  const { t } = useTranslation();
   const fsAvailable = fs.isAvailable();
 
   return (
@@ -23,11 +25,10 @@ export function EmptyBoard({ onSetup, onConnectFolder }: EmptyBoardProps) {
       </div>
       <div className="space-y-1.5">
         <h2 className="font-display text-xl font-medium tracking-tight text-ink">
-          Nothing on the board yet
+          {t('emptyBoard.heading')}
         </h2>
         <p className="font-display text-md leading-relaxed text-soft">
-          Connect a source - your inbox, Slack, or a meeting note-taker - and Cowork
-          Tasks starts populating automatically.
+          {t('emptyBoard.description')}
         </p>
       </div>
       <div className="flex items-center gap-2 pt-1">
@@ -38,7 +39,7 @@ export function EmptyBoard({ onSetup, onConnectFolder }: EmptyBoardProps) {
             className="inline-flex h-8 items-center gap-1.5 rounded-sm border border-line bg-canvas px-3 font-display text-sm font-medium text-ink transition-colors duration-fast hover:bg-paper"
           >
             <FolderOpen size={14} strokeWidth={1.6} />
-            Connect folder
+            {t('emptyBoard.connectFolder')}
           </button>
         )}
         {onSetup && (
@@ -48,7 +49,7 @@ export function EmptyBoard({ onSetup, onConnectFolder }: EmptyBoardProps) {
             className="inline-flex h-8 items-center gap-1.5 rounded-sm bg-accent px-3 font-display text-sm font-medium text-accent-fg shadow-sm transition-all duration-fast hover:shadow-md active:scale-[0.98]"
           >
             <Sparkles size={13} strokeWidth={1.7} />
-            Connect a source
+            {t('emptyBoard.connectSource')}
           </button>
         )}
       </div>

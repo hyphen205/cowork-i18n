@@ -85,6 +85,7 @@
   },
   "sidePanel": {
     "close": "Close",
+    "descriptionPlaceholder": "Add context. Markdown supported — **bold**, ```code```, tables, [links](url), and even ```mermaid diagrams.",
     "noOwner": "No owner",
     "addLabel": "Add label",
     "editLabels": "Edit",

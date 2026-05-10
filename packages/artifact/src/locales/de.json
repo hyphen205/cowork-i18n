@@ -85,6 +85,7 @@
   },
   "sidePanel": {
     "close": "Schließen",
+    "descriptionPlaceholder": "Kontext hinzufügen. Markdown unterstützt — **fett**, ```Code```, Tabellen, [Links](url) und sogar ```Mermaid-Diagramme.",
     "noOwner": "Kein Verantwortlicher",
     "addLabel": "Label hinzufügen",
     "editLabels": "Bearbeiten",

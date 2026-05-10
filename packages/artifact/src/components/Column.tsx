@@ -1,6 +1,7 @@
 import { useDroppable } from '@dnd-kit/core';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Column as ColumnType } from '../types';
 
 interface ColumnProps {
@@ -23,6 +24,7 @@ export function Column({
   autoOpen,
   onAutoOpenConsumed,
 }: ColumnProps) {
+  const { t } = useTranslation();
   const { isOver, setNodeRef } = useDroppable({ id: column.id });
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState('');
@@ -114,7 +116,7 @@ export function Column({
             <h2
               className="font-display text-2xs font-semibold uppercase tracking-wider text-soft"
               onDoubleClick={() => onRename && setRenaming(true)}
-              title={onRename ? 'Double-click to rename' : undefined}
+              title={onRename ? t('column.renameTitle') : undefined}
             >
               {column.name}
             </h2>
@@ -131,7 +133,7 @@ export function Column({
         <div className="flex items-center gap-1.5">
           {column.wip_limit && count >= column.wip_limit && (
             <span className="font-mono text-2xs uppercase tracking-wide text-warning">
-              WIP
+              {t('column.wip')}
             </span>
           )}
           {onAddTask && !adding && (
@@ -140,7 +142,7 @@ export function Column({
               data-testid="add-task-button"
               data-column-id={column.id}
               onClick={() => setAdding(true)}
-              aria-label={`Add task to ${column.name}`}
+              aria-label={t('column.addTask', { name: column.name })}
               className="inline-flex h-6 w-6 items-center justify-center rounded-sm text-faint transition-colors duration-fast hover:bg-canvas hover:text-ink"
             >
               <Plus size={14} strokeWidth={1.8} />
@@ -182,12 +184,12 @@ export function Column({
                 }
               }}
               rows={2}
-              placeholder="Task title  ·  Enter to save"
+              placeholder={t('column.taskTitlePlaceholder')}
               className="w-full resize-none border-0 bg-transparent font-display text-md text-ink placeholder:text-faint focus:outline-none"
               data-testid="add-task-input"
             />
             <div className="mt-1 flex items-center justify-between gap-2">
-              <span className="font-mono text-2xs text-faint">⏎ save · Esc cancel</span>
+              <span className="font-mono text-2xs text-faint">{t('column.saveHint')}</span>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -197,7 +199,7 @@ export function Column({
                   }}
                   className="inline-flex h-6 items-center rounded-sm px-2 font-display text-xs text-soft hover:bg-paper"
                 >
-                  Cancel
+                  {t('column.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -205,7 +207,7 @@ export function Column({
                   disabled={!draft.trim()}
                   className="inline-flex h-6 items-center rounded-sm bg-ink px-2 font-display text-xs font-medium text-canvas transition-opacity duration-fast disabled:opacity-30"
                 >
-                  Add
+                  {t('column.add')}
                 </button>
               </div>
             </div>

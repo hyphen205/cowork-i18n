@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   DndContext,
   DragOverlay,
@@ -48,6 +49,7 @@ function deriveColumns(
   by: GroupBy,
   tasks: Task[],
   fallback: ReadonlyArray<{ id: string; name: string; color?: string }>,
+  noOwnerLabel: string,
 ): Array<{ id: string; name: string; color?: string }> {
   if (by === 'status') return [...fallback];
   if (by === 'priority') return PRIORITY_BUCKETS;
@@ -63,10 +65,11 @@ function deriveColumns(
   for (const t of tasks) owners.add(t.owner ?? '__no_owner__');
   return Array.from(owners)
     .sort()
-    .map((id) => ({ id, name: id === '__no_owner__' ? 'No owner' : id }));
+    .map((id) => ({ id, name: id === '__no_owner__' ? noOwnerLabel : id }));
 }
 
 export function App() {
+  const { t } = useTranslation();
   const { config, renameColumn, addColumn } = useConfig();
   const { tasks, version, newlyAdded, refresh, loading, setTasksLocal, resetToSnapshot } =
     useTasks(2000);
@@ -128,8 +131,8 @@ export function App() {
 
   const effectiveColumns = useMemo(() => {
     if (!board) return [];
-    return deriveColumns(groupBy, filtered, board.columns);
-  }, [groupBy, filtered, board]);
+    return deriveColumns(groupBy, filtered, board.columns, t('app.noOwner'));
+  }, [groupBy, filtered, board, t]);
 
   const tasksByColumn = useMemo(() => {
     const map = new Map<string, Task[]>();
@@ -271,7 +274,7 @@ export function App() {
     setTasksLocal((prev) => prev.filter((t) => t.id !== id));
     void api.archiveTask(id);
     if (snapshot) {
-      setUndoableToast('Card archived.', async () => {
+      setUndoableToast(t('app.cardArchived'), async () => {
         // Optimistic local restore: re-insert the snapshot in place.
         setTasksLocal((prev) => (prev.some((t) => t.id === id) ? prev : [...prev, snapshot]));
         await api.unarchiveTask(id);
@@ -284,7 +287,7 @@ export function App() {
     setTasksLocal((prev) => prev.filter((t) => t.id !== id));
     void api.deleteTask(id);
     if (snapshot) {
-      setUndoableToast('Card deleted.', async () => {
+      setUndoableToast(t('app.cardDeleted'), async () => {
         setTasksLocal((prev) => (prev.some((t) => t.id === id) ? prev : [...prev, snapshot]));
         await api.restoreTask(id);
       });
@@ -447,9 +450,9 @@ export function App() {
           void askClaude(prompt);
           try {
             await navigator.clipboard?.writeText(prompt);
-            setToast('Triage command copied — paste it in chat to run.');
+            setToast(t('app.triageCopied'));
           } catch {
-            setToast(`Couldn't copy. Paste this in chat: ${prompt}`);
+            setToast(t('app.copyFailed', { prompt }));
           }
         }}
         onConnectFolder={async () => {
@@ -478,9 +481,9 @@ export function App() {
                 void askClaude(prompt);
                 try {
                   await navigator.clipboard?.writeText(prompt);
-                  setToast('Setup command copied — paste it in chat to run.');
+                  setToast(t('app.setupCopied'));
                 } catch {
-                  setToast(`Couldn't copy. Paste this in chat: ${prompt}`);
+                  setToast(t('app.copyFailed', { prompt }));
                 }
               }}
               onConnectFolder={async () => {
@@ -598,7 +601,7 @@ export function App() {
               data-testid="toast-undo"
               className="rounded-sm px-1.5 py-0.5 font-display text-[12px] font-semibold text-accent hover:bg-paper"
             >
-              Undo
+              {t('app.undo')}
             </button>
           )}
         </div>
@@ -613,6 +616,7 @@ import { useEffect as _useEffectAddCol, useRef as _useRefAddCol, useState as _us
 import { Plus as PlusIconAddCol } from 'lucide-react';
 
 function AddColumnSlot({ onAdd }: { onAdd: (name: string) => void }) {
+  const { t } = useTranslation();
   const [opening, setOpening] = _useStateAddCol(false);
   const [draft, setDraft] = _useStateAddCol('');
   const ref = _useRefAddCol<HTMLInputElement>(null);
@@ -634,11 +638,11 @@ function AddColumnSlot({ onAdd }: { onAdd: (name: string) => void }) {
         type="button"
         onClick={() => setOpening(true)}
         data-testid="add-column-button"
-        aria-label="Add a new column"
+        aria-label={t('app.addColumnLabel')}
         className="flex h-full min-w-[200px] flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-line bg-canvas/40 px-3 py-6 font-display text-[13px] text-soft transition-colors hover:border-line-strong hover:bg-paper hover:text-ink"
       >
         <PlusIconAddCol size={16} strokeWidth={1.6} />
-        New column
+        {t('app.newColumn')}
       </button>
     );
   }
@@ -649,7 +653,7 @@ function AddColumnSlot({ onAdd }: { onAdd: (name: string) => void }) {
       className="flex h-full min-w-[230px] flex-col rounded-lg border border-accent/40 bg-canvas px-3 py-3 shadow-sm"
     >
       <label className="font-display text-2xs font-semibold uppercase tracking-wider text-soft">
-        New column
+        {t('app.newColumn')}
       </label>
       <input
         ref={ref}
@@ -673,11 +677,11 @@ function AddColumnSlot({ onAdd }: { onAdd: (name: string) => void }) {
             submit();
           }
         }}
-        placeholder="Column name"
+        placeholder={t('app.columnNamePlaceholder')}
         data-testid="add-column-input"
         className="mt-2 w-full bg-canvas font-display text-md text-ink outline-none ring-1 ring-line-strong rounded-sm px-2 py-1 focus:ring-accent/40"
       />
-      <span className="mt-2 font-mono text-2xs text-faint">⏎ add · Esc cancel</span>
+      <span className="mt-2 font-mono text-2xs text-faint">{t('app.addHint')}</span>
     </div>
   );
 }

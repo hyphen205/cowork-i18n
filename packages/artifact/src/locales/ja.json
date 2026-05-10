@@ -85,6 +85,7 @@
   },
   "sidePanel": {
     "close": "閉じる",
+    "descriptionPlaceholder": "コンテキストを追加。Markdown 対応 — **太字**、```コード```、テーブル、[リンク](url)、```mermaid 図も使えます。",
     "noOwner": "担当者なし",
     "addLabel": "ラベルを追加",
     "editLabels": "編集",

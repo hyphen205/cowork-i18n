@@ -8,6 +8,7 @@ import {
   Archive,
 } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { fs } from '../api';
 
 interface TopBarProps {
@@ -53,6 +54,7 @@ export function TopBar({
   groupBy,
   onChangeGroupBy,
 }: TopBarProps) {
+  const { t } = useTranslation();
   const [q, setQ] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const [fsConnected, setFsConnected] = useState(fs.isConnected());
@@ -72,7 +74,7 @@ export function TopBar({
           {boardName}
         </h1>
         <span className="font-display text-xs text-faint">
-          {taskCount} <span className="text-faint/80">{taskCount === 1 ? 'task' : 'tasks'}</span>
+          {t('topBar.taskCount', { count: taskCount })}
         </span>
       </div>
 
@@ -86,7 +88,7 @@ export function TopBar({
           />
           <input
             type="search"
-            placeholder="Search"
+            placeholder={t('topBar.search')}
             value={q}
             onChange={(e) => {
               setQ(e.target.value);
@@ -108,7 +110,7 @@ export function TopBar({
         {/* Group by dropdown */}
         <label className="inline-flex items-center gap-1.5 rounded-sm px-1.5 py-0.5 hover:bg-paper">
           <span className="font-display text-2xs uppercase tracking-wider text-faint">
-            Group
+            {t('topBar.group')}
           </span>
           <select
             value={groupBy}
@@ -116,10 +118,10 @@ export function TopBar({
             data-testid="group-by-select"
             className="bg-canvas font-display text-xs text-ink outline-none focus:ring-1 focus:ring-accent/35 rounded-sm"
           >
-            <option value="status">Status</option>
-            <option value="source">Source</option>
-            <option value="owner">Owner</option>
-            <option value="priority">Priority</option>
+            <option value="status">{t('topBar.groupBy.status')}</option>
+            <option value="source">{t('topBar.groupBy.source')}</option>
+            <option value="owner">{t('topBar.groupBy.owner')}</option>
+            <option value="priority">{t('topBar.groupBy.priority')}</option>
           </select>
         </label>
 
@@ -130,11 +132,7 @@ export function TopBar({
               await onConnectFolder();
               setFsConnected(fs.isConnected());
             }}
-            label={
-              fsConnected
-                ? 'Connected to ~/.cowork-tasks/. Drag/edits write to JSON files.'
-                : 'Connect ~/.cowork-tasks/ for JSON-file persistence.'
-            }
+            label={fsConnected ? t('topBar.folderConnected') : t('topBar.folderDisconnected')}
             testId="connect-folder-button"
             data={{ connected: fsConnected }}
             tone={fsConnected ? 'success' : 'ghost'}
@@ -146,7 +144,7 @@ export function TopBar({
         {/* Show archived */}
         <IconButton
           onClick={onToggleShowArchived}
-          label={`${showArchived ? 'Hiding' : 'Showing'} archived  ·  A`}
+          label={showArchived ? t('topBar.hidingArchived') : t('topBar.showingArchived')}
           testId="toggle-archived-button"
           data={{ active: showArchived }}
           tone={showArchived ? 'accent' : 'ghost'}
@@ -155,7 +153,7 @@ export function TopBar({
         </IconButton>
 
         {/* Help */}
-        <IconButton onClick={onShowHelp} label="Keyboard shortcuts  ·  ?" testId="help-button" tone="ghost">
+        <IconButton onClick={onShowHelp} label={t('topBar.keyboardShortcuts')} testId="help-button" tone="ghost">
           <Keyboard size={14} strokeWidth={1.6} />
         </IconButton>
 
@@ -170,7 +168,7 @@ export function TopBar({
         <div className="relative">
           <IconButton
             onClick={() => setShowSettings((s) => !s)}
-            label="Settings"
+            label={t('topBar.settings')}
             testId="settings-button"
             tone="ghost"
             pressed={showSettings}
@@ -185,21 +183,20 @@ export function TopBar({
             >
               <div className="px-2 py-1.5">
                 <p className="font-display text-2xs font-semibold uppercase tracking-wider text-faint">
-                  Persistence
+                  {t('topBar.persistence')}
                 </p>
                 <p className="mt-1 font-display text-sm leading-snug text-soft">
                   {dataSource === 'fs' && (
                     <>
-                      Writing to{' '}
+                      {t('topBar.writingToFs')}{' '}
                       <code className="rounded-xs bg-muted px-1 font-mono text-2xs text-ink">
                         ~/.cowork-tasks/
                       </code>{' '}
-                      as JSON files.
+                      {t('topBar.writingToFsSuffix')}
                     </>
                   )}
-                  {dataSource === 'mcp' && 'Writing through the Cowork Tasks MCP server.'}
-                  {dataSource === 'snapshot' &&
-                    'Local edits saved in browser storage. Click "Connect folder" for JSON-file persistence.'}
+                  {dataSource === 'mcp' && t('topBar.writingToMcp')}
+                  {dataSource === 'snapshot' && t('topBar.writingToSnapshot')}
                 </p>
               </div>
               <hr className="my-1.5 border-line" />
@@ -212,9 +209,9 @@ export function TopBar({
                 data-testid="reset-snapshot-button"
                 className="block w-full rounded-sm px-2 py-1.5 text-left font-display text-sm text-ink transition-colors duration-fast hover:bg-paper"
               >
-                Reset to snapshot
+                {t('topBar.resetToSnapshot')}
                 <span className="block font-display text-2xs text-faint">
-                  Clears local edits; reloads the open-board snapshot.
+                  {t('topBar.resetToSnapshotDesc')}
                 </span>
               </button>
             </div>
@@ -225,14 +222,14 @@ export function TopBar({
         <button
           type="button"
           onClick={onTriageNow}
-          title={`Auto-triage every ${triageIntervalMinutes}m. Click to run now.`}
+          title={t('topBar.triageTitle', { minutes: triageIntervalMinutes })}
           className={[
             'ml-1 inline-flex h-7 items-center gap-1.5 rounded-sm bg-accent px-3 font-display text-xs font-medium text-accent-fg',
             'shadow-sm transition-all duration-fast hover:shadow-md active:scale-[0.98]',
           ].join(' ')}
         >
           <Sparkles size={13} strokeWidth={1.8} />
-          Triage now
+          {t('topBar.triageNow')}
         </button>
       </div>
     </header>

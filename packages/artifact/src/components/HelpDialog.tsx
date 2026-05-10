@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface HelpDialogProps {
   onClose: () => void;
@@ -8,30 +9,6 @@ interface Row {
   keys: string[];
   description: string;
 }
-
-const HOVER_SHORTCUTS: Row[] = [
-  { keys: ['E', 'Enter'], description: 'Open card' },
-  { keys: ['C'], description: 'Archive card' },
-  { keys: ['L'], description: 'Open labels' },
-  { keys: ['M'], description: 'Open owner' },
-  { keys: ['D'], description: 'Set due date' },
-  { keys: ['1', '–', '9', '0'], description: 'Toggle label by number' },
-];
-const BOARD_SHORTCUTS: Row[] = [
-  { keys: ['/'], description: 'Focus search' },
-  { keys: ['N'], description: 'New task in Inbox' },
-  { keys: ['A'], description: 'Toggle show archived' },
-  { keys: ['?'], description: 'This help' },
-];
-const MODAL_SHORTCUTS: Row[] = [
-  { keys: ['T'], description: 'Edit title' },
-  { keys: ['Space'], description: 'Assign to me' },
-  { keys: ['L'], description: 'Toggle labels' },
-  { keys: ['M'], description: 'Toggle owner' },
-  { keys: ['C'], description: 'Archive' },
-  { keys: ['D'], description: 'Edit due date' },
-  { keys: ['Esc'], description: 'Close popup → close modal' },
-];
 
 function Section({ title, rows }: { title: string; rows: Row[] }) {
   return (
@@ -61,11 +38,37 @@ function Section({ title, rows }: { title: string; rows: Row[] }) {
 }
 
 export function HelpDialog({ onClose }: HelpDialogProps) {
+  const { t } = useTranslation();
+
+  const HOVER_SHORTCUTS: Row[] = [
+    { keys: ['E', 'Enter'], description: t('helpDialog.shortcuts.openCard') },
+    { keys: ['C'], description: t('helpDialog.shortcuts.archiveCard') },
+    { keys: ['L'], description: t('helpDialog.shortcuts.openLabels') },
+    { keys: ['M'], description: t('helpDialog.shortcuts.openOwner') },
+    { keys: ['D'], description: t('helpDialog.shortcuts.setDueDate') },
+    { keys: ['1', '–', '9', '0'], description: t('helpDialog.shortcuts.toggleLabelByNumber') },
+  ];
+  const BOARD_SHORTCUTS: Row[] = [
+    { keys: ['/'], description: t('helpDialog.shortcuts.focusSearch') },
+    { keys: ['N'], description: t('helpDialog.shortcuts.newTaskInInbox') },
+    { keys: ['A'], description: t('helpDialog.shortcuts.toggleShowArchived') },
+    { keys: ['?'], description: t('helpDialog.shortcuts.thisHelp') },
+  ];
+  const MODAL_SHORTCUTS: Row[] = [
+    { keys: ['T'], description: t('helpDialog.shortcuts.editTitle') },
+    { keys: ['Space'], description: t('helpDialog.shortcuts.assignToMe') },
+    { keys: ['L'], description: t('helpDialog.shortcuts.toggleLabels') },
+    { keys: ['M'], description: t('helpDialog.shortcuts.toggleOwner') },
+    { keys: ['C'], description: t('helpDialog.shortcuts.archive') },
+    { keys: ['D'], description: t('helpDialog.shortcuts.editDueDate') },
+    { keys: ['Esc'], description: t('helpDialog.shortcuts.closePopup') },
+  ];
+
   return (
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Keyboard shortcuts"
+      aria-label={t('helpDialog.title')}
       data-testid="help-dialog"
       className="fixed inset-0 z-[10000] flex items-center justify-center bg-ink/30 p-4"
       onClick={onClose}
@@ -75,24 +78,24 @@ export function HelpDialog({ onClose }: HelpDialogProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <header className="mb-4 flex items-center justify-between">
-          <h2 className="font-display text-base font-medium text-ink">Keyboard shortcuts</h2>
+          <h2 className="font-display text-base font-medium text-ink">{t('helpDialog.title')}</h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t('helpDialog.close')}
             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-soft hover:bg-paper"
           >
             <X size={14} strokeWidth={1.5} />
           </button>
         </header>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <Section title="Hover a card" rows={HOVER_SHORTCUTS} />
-          <Section title="Board" rows={BOARD_SHORTCUTS} />
-          <Section title="In a card" rows={MODAL_SHORTCUTS} />
+          <Section title={t('helpDialog.sections.hoverCard')} rows={HOVER_SHORTCUTS} />
+          <Section title={t('helpDialog.sections.board')} rows={BOARD_SHORTCUTS} />
+          <Section title={t('helpDialog.sections.inCard')} rows={MODAL_SHORTCUTS} />
         </div>
         <footer className="mt-5 border-t border-line pt-3 text-[12px] text-soft">
           Press <kbd className="rounded-sm border border-line bg-paper px-1 font-mono">Esc</kbd>{' '}
-          or click outside to close.
+          {t('helpDialog.footerSuffix')}
         </footer>
       </div>
     </div>

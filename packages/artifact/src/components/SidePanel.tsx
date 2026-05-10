@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ExternalLink,
   Sparkles,
@@ -52,6 +53,7 @@ export function SidePanel({
   focusTitleSignal,
   focusDueSignal,
 }: SidePanelProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description ?? '');
   const [editingDescription, setEditingDescription] = useState(false);
@@ -132,8 +134,8 @@ export function SidePanel({
       }
       setAiOutput(
         copied
-          ? `Prompt for "${label}" copied to clipboard — paste it in chat to run.`
-          : `Couldn't copy automatically. Prompt:\n\n${prompt}`,
+          ? t('sidePanel.promptCopied', { label })
+          : t('sidePanel.promptCopyFailed', { prompt }),
       );
     } finally {
       setAiBusy(false);
@@ -146,7 +148,7 @@ export function SidePanel({
   return (
     <aside
       role="dialog"
-      aria-label={`Task: ${task.title}`}
+      aria-label={task.title}
       data-testid="side-panel"
       className="flex w-[440px] flex-col border-l border-line bg-canvas"
     >
@@ -160,7 +162,7 @@ export function SidePanel({
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close"
+          aria-label={t('sidePanel.close')}
           className="inline-flex h-8 w-8 items-center justify-center rounded-md text-soft hover:bg-paper"
         >
           <X size={16} strokeWidth={1.5} />
@@ -193,7 +195,7 @@ export function SidePanel({
             ) : (
               <>
                 <User size={14} strokeWidth={1.5} className="text-faint" />
-                <span className="font-display text-[12px] text-faint">No owner</span>
+                <span className="font-display text-[12px] text-faint">{t('sidePanel.noOwner')}</span>
               </>
             )}
           </button>
@@ -227,7 +229,7 @@ export function SidePanel({
             className="inline-flex items-center gap-1 rounded-sm border border-dashed border-line px-1.5 py-0.5 font-display text-[11px] text-soft hover:border-line hover:bg-paper"
           >
             <Tag size={11} strokeWidth={1.5} />
-            {task.labels.length === 0 ? 'Add label' : 'Edit'}
+            {task.labels.length === 0 ? t('sidePanel.addLabel') : t('sidePanel.editLabels')}
           </button>
         </div>
 
@@ -267,7 +269,7 @@ export function SidePanel({
             }}
             autoFocus={editingDescription}
             rows={6}
-            placeholder="Add context. Markdown supported - **bold**, ```code```, tables, [links](url), ![images](url), and even ```mermaid diagrams."
+            placeholder={t('sidePanel.descriptionPlaceholder')}
             data-testid="side-panel-description"
             className="mt-4 w-full resize-none rounded-md border border-line bg-canvas p-3 font-mono text-[12.5px] leading-relaxed text-ink placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-accent/35"
           />
@@ -287,7 +289,7 @@ export function SidePanel({
                 setTimeout(() => descRef.current?.focus(), 0);
               }
             }}
-            title="Click to edit"
+            title={t('sidePanel.clickToEdit')}
             className="mt-4 cursor-text rounded-md border border-transparent p-3 transition-colors hover:border-line hover:bg-paper"
           >
             <Markdown source={description} />
@@ -302,7 +304,7 @@ export function SidePanel({
             className="mt-3 inline-flex items-center gap-1.5 font-display text-[13px] text-info hover:underline"
           >
             <ExternalLink size={14} strokeWidth={1.5} />
-            Open in {task.source.type}
+            {t('sidePanel.openIn', { type: task.source.type })}
           </a>
         )}
 
@@ -324,12 +326,12 @@ export function SidePanel({
         <hr className="my-5 border-line" />
 
         <h3 className="mb-2 font-display text-[12px] font-medium uppercase tracking-wider text-soft">
-          Ask Claude
+          {t('sidePanel.askClaude')}
         </h3>
         <div className="grid grid-cols-2 gap-2">
           <AiButton
             icon={<Sparkles size={14} strokeWidth={1.5} />}
-            label="Summarize source"
+            label={t('sidePanel.summarizeSource')}
             disabled={aiBusy}
             onClick={() =>
               inlineAi(
@@ -340,7 +342,7 @@ export function SidePanel({
           />
           <AiButton
             icon={<Wand2 size={14} strokeWidth={1.5} />}
-            label="Tighten title"
+            label={t('sidePanel.tightenTitle')}
             disabled={aiBusy}
             onClick={() =>
               inlineAi(
@@ -351,7 +353,7 @@ export function SidePanel({
           />
           <AiButton
             icon={<MessageSquare size={14} strokeWidth={1.5} />}
-            label="Draft reply"
+            label={t('sidePanel.draftReply')}
             disabled={aiBusy}
             onClick={() =>
               handoff(
@@ -362,7 +364,7 @@ export function SidePanel({
           />
           <AiButton
             icon={<Sparkles size={14} strokeWidth={1.5} />}
-            label="Split into subtasks"
+            label={t('sidePanel.splitIntoSubtasks')}
             disabled={aiBusy}
             onClick={() =>
               handoff(
@@ -374,7 +376,7 @@ export function SidePanel({
         </div>
 
         {aiBusy && (
-          <p className="mt-3 font-display text-[13px] text-soft">Asking Claude...</p>
+          <p className="mt-3 font-display text-[13px] text-soft">{t('sidePanel.askingClaude')}</p>
         )}
         {aiOutput && (
           <div className="mt-3 rounded-md border border-line bg-paper p-3 font-display text-[13px] leading-relaxed text-ink whitespace-pre-wrap">
@@ -393,7 +395,7 @@ export function SidePanel({
           }}
           className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 font-display text-[13px] text-soft hover:bg-paper"
         >
-          Archive
+          {t('sidePanel.archive')}
         </button>
         <button
           type="button"
@@ -405,7 +407,7 @@ export function SidePanel({
           className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 font-display text-[13px] text-danger hover:bg-paper"
         >
           <Trash2 size={14} strokeWidth={1.5} />
-          Delete
+          {t('sidePanel.delete')}
         </button>
       </footer>
     </aside>
@@ -430,7 +432,7 @@ function PriorityChip({
         data-testid="open-priority-picker"
         className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 font-display text-[12px] text-soft hover:bg-paper"
       >
-        priority: <span className="text-ink">{value}</span>
+        {t('sidePanel.priorityLabel')}<span className="text-ink">{value}</span>
       </button>
       {open && (
         <ul
@@ -471,6 +473,7 @@ function LabelPicker({
   onChange: (l: string[]) => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const toggle = (name: string) =>
     selected.includes(name)
       ? onChange(selected.filter((s) => s !== name))
@@ -482,11 +485,11 @@ function LabelPicker({
       className="mt-2 rounded-md border border-line bg-paper p-2"
     >
       <div className="mb-1 flex items-center justify-between">
-        <p className="font-display text-[11px] uppercase tracking-wider text-soft">Labels</p>
+        <p className="font-display text-[11px] uppercase tracking-wider text-soft">{t('sidePanel.labels')}</p>
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close labels"
+          aria-label={t('sidePanel.closeLabels')}
           className="text-soft hover:text-ink"
         >
           <X size={12} strokeWidth={1.5} />
@@ -531,6 +534,7 @@ function OwnerPicker({
   onChange: (o: string) => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState(current);
   return (
     <div
@@ -539,11 +543,11 @@ function OwnerPicker({
       className="mt-2 rounded-md border border-line bg-paper p-2"
     >
       <div className="mb-1 flex items-center justify-between">
-        <p className="font-display text-[11px] uppercase tracking-wider text-soft">Owner</p>
+        <p className="font-display text-[11px] uppercase tracking-wider text-soft">{t('sidePanel.owner')}</p>
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close owner"
+          aria-label={t('sidePanel.closeOwner')}
           className="text-soft hover:text-ink"
         >
           <X size={12} strokeWidth={1.5} />
@@ -560,7 +564,7 @@ function OwnerPicker({
             onClose();
           }
         }}
-        placeholder="Owner name"
+        placeholder={t('sidePanel.ownerNamePlaceholder')}
         data-testid="owner-input"
         className="w-full rounded-sm border border-line bg-canvas px-2 py-1 font-display text-[13px] text-ink placeholder:text-faint focus:outline-none focus:ring-2 focus:ring-accent/35"
       />
@@ -571,7 +575,7 @@ function OwnerPicker({
           data-testid="owner-save"
           className="rounded-md bg-accent px-2 py-1 font-display text-[12px] font-medium text-accent-fg"
         >
-          Save
+          {t('sidePanel.save')}
         </button>
       </div>
     </div>
@@ -618,6 +622,7 @@ function ChecklistSection({
   items: ChecklistItem[];
   onChange: (next: ChecklistItem[]) => void;
 }) {
+  const { t } = useTranslation();
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -650,7 +655,7 @@ function ChecklistSection({
     <section data-testid="side-panel-checklist">
       <div className="flex items-baseline justify-between">
         <h3 className="font-display text-[12px] font-medium uppercase tracking-wider text-soft">
-          Checklist
+          {t('sidePanel.checklist')}
           {total > 0 && (
             <span className="ml-2 font-mono text-[11px] normal-case text-faint">
               {done}/{total}
@@ -664,7 +669,7 @@ function ChecklistSection({
             data-testid="checklist-add-button"
             className="inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 font-display text-[12px] text-soft hover:bg-paper hover:text-ink"
           >
-            <PlusIcon size={12} strokeWidth={1.8} /> Add
+            <PlusIcon size={12} strokeWidth={1.8} /> {t('sidePanel.checklistAdd')}
           </button>
         )}
       </div>
@@ -679,7 +684,7 @@ function ChecklistSection({
             >
               <button
                 type="button"
-                aria-label={item.done ? 'Mark not done' : 'Mark done'}
+                aria-label={item.done ? t('sidePanel.markNotDone') : t('sidePanel.markDone')}
                 onClick={() => toggle(item.id)}
                 data-testid="checklist-toggle"
                 className={[
@@ -701,7 +706,7 @@ function ChecklistSection({
               />
               <button
                 type="button"
-                aria-label="Remove item"
+                aria-label={t('sidePanel.removeItem')}
                 onClick={() => remove(item.id)}
                 data-testid="checklist-remove"
                 className="invisible inline-flex h-5 w-5 items-center justify-center rounded-sm text-faint hover:bg-muted hover:text-danger group-hover:visible"
@@ -720,7 +725,7 @@ function ChecklistSection({
             ref={inputRef}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="New item, Enter to add"
+            placeholder={t('sidePanel.newItemPlaceholder')}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
@@ -747,7 +752,7 @@ function ChecklistSection({
 
       {total === 0 && !adding && (
         <p className="mt-2 font-display text-[12.5px] text-faint">
-          No items yet. Add one to break this task into smaller steps.
+          {t('sidePanel.noItems')}
         </p>
       )}
     </section>
@@ -765,6 +770,7 @@ function CommentsSection({
   ownerName?: string;
   onChange: (next: Comment[]) => void;
 }) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState('');
 
   const submit = () => {
@@ -787,7 +793,7 @@ function CommentsSection({
   return (
     <section data-testid="side-panel-comments">
       <h3 className="font-display text-[12px] font-medium uppercase tracking-wider text-soft">
-        Comments
+        {t('sidePanel.comments')}
         {comments.length > 0 && (
           <span className="ml-2 font-mono text-[11px] normal-case text-faint">
             {comments.length}
@@ -820,11 +826,11 @@ function CommentsSection({
               <button
                 type="button"
                 onClick={() => remove(c.id)}
-                aria-label="Remove comment"
+                aria-label={t('sidePanel.removeComment')}
                 data-testid="comment-remove"
                 className="invisible mt-1 font-display text-[11px] text-faint hover:text-danger group-hover:visible"
               >
-                Remove
+                {t('sidePanel.remove')}
               </button>
             </li>
           ))}
@@ -836,7 +842,7 @@ function CommentsSection({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           rows={2}
-          placeholder="Add a comment, Cmd/Ctrl+Enter to send"
+          placeholder={t('sidePanel.commentPlaceholder')}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
               e.preventDefault();
@@ -850,11 +856,11 @@ function CommentsSection({
           type="button"
           onClick={submit}
           disabled={!draft.trim()}
-          aria-label="Add comment"
+          aria-label={t('sidePanel.addComment')}
           data-testid="comment-submit"
           className="inline-flex h-8 items-center gap-1 rounded-md bg-accent px-3 font-display text-[12px] font-medium text-accent-fg shadow-sm transition-all hover:shadow-md disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none"
         >
-          <SendIcon size={12} strokeWidth={1.8} /> Send
+          <SendIcon size={12} strokeWidth={1.8} /> {t('sidePanel.send')}
         </button>
       </div>
     </section>
